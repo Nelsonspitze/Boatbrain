@@ -26,7 +26,7 @@ export default function SystemsScreen() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!activeBoat) return;
+    if (!activeBoat || !db) return;
     setIsLoading(true);
     db.select().from(systems).where(eq(systems.boatId, activeBoat.id))
       .then(setSystemsList)

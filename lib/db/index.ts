@@ -1,12 +1,22 @@
-import { drizzle } from 'drizzle-orm/expo-sqlite';
-import * as SQLite from 'expo-sqlite';
+import { Platform } from 'react-native';
 import * as schema from './schema';
 
-const sqlite = SQLite.openDatabaseSync('boatbrain.db');
-export const db = drizzle(sqlite, { schema });
+// SQLite is native-only; on web we export null and skip all DB operations
+let _db: any = null;
+let _sqlite: any = null;
+
+if (Platform.OS !== 'web') {
+  const SQLite = require('expo-sqlite');
+  const { drizzle } = require('drizzle-orm/expo-sqlite');
+  _sqlite = SQLite.openDatabaseSync('boatbrain.db');
+  _db = drizzle(_sqlite, { schema });
+}
+
+export const db: ReturnType<typeof import('drizzle-orm/expo-sqlite').drizzle> = _db;
 
 export async function initDatabase() {
-  await sqlite.execAsync(`
+  if (Platform.OS === 'web' || !_sqlite) return;
+  await _sqlite.execAsync(`
     PRAGMA journal_mode = WAL;
     PRAGMA foreign_keys = ON;
 

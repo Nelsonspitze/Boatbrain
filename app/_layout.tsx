@@ -1,11 +1,13 @@
 import { useEffect } from 'react';
+import { Platform } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { initDatabase } from '../lib/db';
 
 export default function RootLayout() {
   useEffect(() => {
-    initDatabase().catch(console.error);
+    if (Platform.OS !== 'web') {
+      import('../lib/db').then(({ initDatabase }) => initDatabase().catch(console.error));
+    }
   }, []);
 
   return (
@@ -20,7 +22,7 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="boat/new" options={{ title: 'Add Boat', presentation: 'modal' }} />
       </Stack>
     </>
   );

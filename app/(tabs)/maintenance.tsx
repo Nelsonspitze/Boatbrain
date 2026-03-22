@@ -19,7 +19,7 @@ export default function MaintenanceScreen() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!activeBoat) return;
+    if (!activeBoat || !db) return;
     setIsLoading(true);
     db.select()
       .from(maintenanceTasks)
