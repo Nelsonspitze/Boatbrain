@@ -31,6 +31,7 @@ export const useBoatsStore = create<BoatsState>((set, get) => ({
   isLoading: false,
 
   loadBoats: async () => {
+    if (!db) return;
     set({ isLoading: true });
     const rows = await db.select().from(boats);
     set({ boats: rows, isLoading: false });
@@ -46,28 +47,30 @@ export const useBoatsStore = create<BoatsState>((set, get) => ({
       updatedAt: now(),
       syncedAt: null,
     };
-    await db.insert(boats).values(boat);
+    if (db) await db.insert(boats).values(boat);
     set((s) => ({ boats: [...s.boats, boat] }));
     return boat;
   },
 
   updateBoat: async (id, data) => {
-    await db.update(boats).set({ ...data, updatedAt: now() }).where(eq(boats.id, id));
+    if (db) await db.update(boats).set({ ...data, updatedAt: now() }).where(eq(boats.id, id));
     set((s) => ({
       boats: s.boats.map((b) => (b.id === id ? { ...b, ...data, updatedAt: now() } : b)),
     }));
   },
 
   deleteBoat: async (id) => {
-    await db.delete(boats).where(eq(boats.id, id));
+    if (db) await db.delete(boats).where(eq(boats.id, id));
     set((s) => ({ boats: s.boats.filter((b) => b.id !== id) }));
   },
 
   getBoatSystems: async (boatId) => {
+    if (!db) return [];
     return db.select().from(systems).where(eq(systems.boatId, boatId));
   },
 
   getBoatComponents: async (boatId) => {
+    if (!db) return [];
     return db.select().from(components).where(eq(components.boatId, boatId));
   },
 }));
