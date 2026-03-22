@@ -30,6 +30,9 @@
       "bundler": "metro",
       "favicon": "./assets/favicon.png"
     },
+    "experiments": {
+      "baseUrl": "/Boatbrain"
+    },
     "plugins": [
       "expo-router",
       "expo-sqlite",
